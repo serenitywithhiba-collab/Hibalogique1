@@ -1,17 +1,25 @@
-# HAI Clinical Platform — Hiba Interactive Avatar Build
+# HAI Clinical Platform — Hiba Avatar Build
 
-Hiba lives directly inside `index.html` as an inline SVG/CSS character — no external photo/image file is used or required. She is full body (head to shoes), dressed in a red blazer, white blouse, black trousers and gold "H" accents, and stays inside the clinical interview panel at all times.
+Hiba now appears in-app as her **real photo** (the one you uploaded, cropped to a clean portrait), embedded directly in `index.html` as a base64 image — no separate image file to host, still a single-file deploy.
 
-## What's animated
-- **Breathing** — a continuous, subtle chest scale loop runs at all times (idle, listening, and speaking).
-- **Blinking** — eyes blink at randomized intervals (~2.5–6s) independent of speech state.
-- **Hair & folder sway** — long hair and the folder she's holding drift gently for a lived-in feel.
-- **Mouth / lip-sync** — the mouth cycles through four viseme shapes (`rest`, `open`, `wide`, `small`). While `speechSynthesis` is speaking, the browser's word-boundary events (`onboundary`) pick a viseme based on the vowel being spoken; if a browser doesn't fire boundary events reliably, a timed fallback keeps her mouth moving naturally instead of freezing.
-- **Gesture** — her arms rotate gently from the shoulder while she's talking (tied to the `speaking` CSS class), plus an ambient waving-hand icon near the scene.
-- **Listening state** — when the microphone is active, her head tilts slightly and a soft pulse ring appears around her; this also fixed a previous bug where the listening indicator never activated (an `id` mismatch in the JS).
+## Why not a hand-drawn cartoon?
+An earlier pass tried to recreate her as a fully hand-coded SVG illustration. It looked cartoonish and didn't resemble her — that was a mistake in approach, not a technical necessity. Using her actual photo is simply better.
+
+## What's animated (and what isn't, on purpose)
+- **Idle breathing** — a continuous, subtle scale pulse on the photo, always running.
+- **Listening** — a gentle tilt plus a soft pulse ring around the photo while the mic is active.
+- **Speaking** — a soft gold glow around the photo, an animated voice-waveform badge in the corner, and the live caption bubble showing exactly what she's saying.
+- **No fake mouth-flap on the photo.** A single flat photo can't open and close its mouth convincingly with CSS — trying it looks worse than not doing it (uncanny, glitchy). The waveform + glow + captions communicate "she's talking" clearly without faking a real lip movement.
+
+## If you want true lip-sync later
+That needs either:
+1. **Segmented layers** — cut the photo into mouth/eye/arm pieces (as originally scoped) so real viseme shapes can swap in, or
+2. **A talking-avatar/lip-sync service** (e.g. D-ID, HeyGen, or similar) that generates a video or frame sequence driven by the audio.
+
+The code already exposes clean hooks (`hibaSay()`, and the `.speaking` / `.listening` classes on `#hibaAvatar`) so either approach can be wired in without restructuring the app.
 
 ## Voice & recognition
-Everything voice-related — `speechSynthesis` for speaking and `SpeechRecognition` for listening — is browser-native and optional. Availability varies by browser/OS, so manual form fields remain a fallback throughout.
+`speechSynthesis` (speaking) and `SpeechRecognition` (listening) remain browser-native and optional, with manual form fields as a fallback throughout.
 
 ## Quick start
-This is a static, single-file app. Open `index.html` directly in a browser, or deploy as-is (see `vercel.json`, which rewrites all routes to `index.html`).
+Static single-file app — open `index.html` directly, or deploy as-is (`vercel.json` rewrites all routes to `index.html`).
